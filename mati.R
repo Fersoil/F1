@@ -21,11 +21,11 @@ library(ggplot2)
 
 # ilosc wygranych wyscigow unormowane do rozpoczecia kariery
 # srednie predkosci bolidow ferrari redbulla mclaren i mercedesa na przestrzeni lat (kolorem zaznaczone sezony w ktorych dany bolid byl najszybszy)
-# najbogatsi kierowcy (slupkowy obrócony)
+# najbogatsi kierowcy (slupkowy obr?cony)
 # jak duze znaczenie ma poczatkowa pozycja (brak pomyslu na wykres) (moze finalne miejsce w zaleznosci od poczatkowego miejca)
 # kto ma rekord na danym torze i kiedy zostal ustanowiony (fajnie sie laczy z srednie predkosci bolidow)
 # jak wyglada statystycznie miejsce wygranego podczas wysciugu np od polowy malo juz sie dzieje bo pierwszy prawie zawsze zostaje pierwszy
-# jak wygl¹daja patterny pitstopow w sezonie 2021 ferrari redbulla mclaren i mercedesa
+# jak wygl?daja patterny pitstopow w sezonie 2021 ferrari redbulla mclaren i mercedesa
 
 View(results)
 
@@ -63,3 +63,26 @@ plot(miejsca_przed_2000,xlab="pozycja startowa", ylab="finalnie miejsce", xlim=c
      ylim=c(1, 21),col="blue", pch = 19)
 points(miejsca_po_2000,col="red", pch = 19)
 abline(a=0, b=1)
+
+#mapka torow
+
+install.packages(c("cowplot", "googleway", "ggplot2", "ggrepel", 
+                   "ggspatial", "libwgeom", "sf", "rnaturalearth", "rnaturalearthdata"))
+library("ggplot2")
+theme_set(theme_bw())
+library("sf")
+
+library("rnaturalearth")
+library("rnaturalearthdata")
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+
+
+ggplot(data = world) +
+  geom_sf() +
+  xlab("Longitude") + ylab("Latitude") +
+  ggtitle("Mapa torow") + 
+  geom_point(data= circuits,aes(x=lng, y=lat), color = "darkblue")+
+  scale_x_continuous(limits = c(-10, 35)) +
+  scale_y_continuous(limits = c(35, 65))
