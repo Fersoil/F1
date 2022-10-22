@@ -27,19 +27,23 @@ library(dplyr)
 library(ggplot2)
 
 df <- results %>% 
-  select(resultId, raceId, driverId, milliseconds)
+  select(resultId, raceId, driverId, milliseconds, position)
 
 # czyscimy te dziwne \N
 df <- df[!is.na(as.numeric(as.character(df$milliseconds))),]
+df <- df[!is.na(as.numeric(as.character(df$position))),]
+#df %>% transform(position = ifelse(position == "\N", ))
+df$position <- as.numeric(df$position)
 df$milliseconds <- as.numeric(df$milliseconds)
 
 df <- df %>%  merge(drivers) %>% 
-  filter(surname %in% c("Hamilton", "Kubica", "Verstappen")) %>% 
+  filter(driverRef %in% 
+           c("hamilton", "vettel", "michael_schumacher", "verstappen")) %>% 
   merge(races, by.x = "raceId", by.y="raceId")
 
 df <- df %>% 
   group_by(surname, year) %>% 
-  summarize(avg_time = mean(milliseconds/(1000))) 
+  summarize(avg_time = mean(milliseconds/(1000)), avg_position=mean(position))
 
 df %>% 
   ggplot() +
@@ -50,5 +54,18 @@ df %>%
         x = "rok") +
   xlim(2005, 2022)
 
+df %>% 
+  ggplot() +
+  aes(y=avg_position, x=year, color=surname) %>% 
+  geom_line(size = 1) +
+  labs(title="porównanie srednich pozycji zawodnikow",
+       y = "œrednie pozycje",
+       x = "rok") +
+  xlim(2005, 2022)
+
 
 head(df)
+
+# porownanie srednich pozycji zawodników
+
+
