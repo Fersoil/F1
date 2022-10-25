@@ -10,7 +10,7 @@ source("mega_wazny_plik.R")
 options(stringsAsFactors = FALSE)
 
 data_set_names <- c("drivers", "driver_standings", "races", "results",
-                    "seasons", "sprint_results", "status", "earnings_2021")
+                    "seasons", "sprint_results", "status", "lap_times", "earnings_2021")
 
 el <- data_set_names[1]
 
@@ -80,10 +80,47 @@ earnings_2021 %>%
   ggplot() +
   aes(x=earnings, y=reorder(name, earnings), fill=name) +
   geom_bar(stat="identity") +
+  theme_minimal() +
   labs(title="porównanie zarobków najlepiej zarabiaj¹cych kierowców F1",
        subtitle = "w 2021 roku",
        y = "zawodnik",
        x = "zarobki (w mln $)") +
   scale_fill_manual(values = c("Lewis Hamilton" = Hamilton, 
                                "Max Verstappen" = Verstappen,
-                               "Sebastian Vettel" = Vettel))
+                               "Sebastian Vettel" = Vettel)) +
+  theme(legend.position = "none")
+
+
+
+# wyprzedzanie
+races %>% 
+  filter(year == 2021) %>% 
+  rename(circuit = name) -> races
+
+drivers <- drivers %>% 
+  filter(driverId %in% driver_standings$driverId) %>% 
+  mutate(driver.name = paste(forename, surname, sep = " ")) %>% 
+  select(driverId, code, number, driver.name, dob, nationality, url) %>% 
+  rename(driver.number = number)
+
+gp <- races %>% select(raceId, round, circuit)
+dr <- drivers %>% select(driverId, driver.name, code, driver.number)
+
+lap_times %>%  left_join(gp, by = "raceId") %>%
+  left_join(dr, by = "driverId")%>% 
+  select(-raceId, -driverId) -> lp
+
+lp %>% 
+  filter(circuit == "Italian Grand Prix") %>% # wybieramy sobie grand prix
+  mutate(colours = case_when( # dodajemy kolorki
+    driver.name == "Lewis Hamilton" ~ Hamilton,
+    driver.name == "Max Verstappen" ~ Verstappen,
+    driver.name == "Sebastian Vettel" ~ Vettel,
+    TRUE ~ "#f0f0f0"
+  )) %>% 
+  ggplot(aes(x=lap, y=position, group=driver.name, color=colours)) +
+  geom_line(size=2) +
+  labs(title = "Pozycje zawodników na Italian Grand Prix 2021", 
+       y = "Pozycja",
+       x = "Okr¹¿enie") 
+  
