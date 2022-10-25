@@ -19,6 +19,8 @@ library(ggplot2)
 najlepsi_id <- drivers %>%
   filter(surname %in% c("Hamilton", "Schumacher", "Vettel", "Verstappen"))
 
+#------------WYKRES ZWYCIÊSTW W KARIERZE----------------
+
 # hamilton niebieski id=1
 # schumacher czerwony id=30
 # verstappen granatowy id=830
@@ -63,3 +65,54 @@ df %>%
        x = "sezony",
        y = "sumaryczna liczba zwyciêstw") +
   xlim(1990, 2022)
+
+#------------WYKRES DLUGOSCI PITSTOPÓW----------------
+head(df)
+head(x)
+head(y)
+
+# merge resoults i races po raceid
+races %>%
+  select(raceId, year) -> x
+
+results %>%
+  select(raceId, driverId, constructorId) -> y
+
+x %>%
+  merge(y) -> df
+
+# filter 2021
+df %>%
+  filter(year == 2021) %>%
+  select(raceId, driverId, constructorId)-> df
+
+# merge df i constructors po constructorid
+constructors %>%
+  select(constructorId, name) -> x
+
+df %>%
+  merge(x) %>%
+  select(raceId, driverId, name)-> df
+
+# merge df i pitstops po driver id
+pit_stops %>%
+  select(raceId, driverId, milliseconds) -> y
+  
+df %>%
+  merge(y) %>%
+  select(name, milliseconds) -> df
+
+# select name(constructor), duration
+df %>%
+  mutate(len = milliseconds/1000) %>%
+  select(name, len) %>%
+  filter(len < 100) -> df
+
+df %>% 
+  ggplot(aes(x = len, y = name, fill = name)) +
+  geom_violin()
+
+df %>% 
+  ggplot(aes(x = len, y = name, fill = name)) +
+  geom_boxplot()
+
