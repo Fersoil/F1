@@ -3,13 +3,14 @@
 # tutaj robimy triki jakies no
 
 getwd()
+source("mega_wazny_plik.R")
 
 
 # pobieranie zbioróW
 options(stringsAsFactors = FALSE)
 
 data_set_names <- c("drivers", "driver_standings", "races", "results",
-                    "seasons", "sprint_results", "status")
+                    "seasons", "sprint_results", "status", "earnings_2021")
 
 el <- data_set_names[1]
 
@@ -38,7 +39,7 @@ df$milliseconds <- as.numeric(df$milliseconds)
 
 df <- df %>%  merge(drivers) %>% 
   filter(driverRef %in% 
-           c("hamilton", "vettel", "michael_schumacher", "verstappen")) %>% 
+           c("hamilton", "vettel", "michael_schumacher", "max_verstappen")) %>% 
   merge(races, by.x = "raceId", by.y="raceId")
 
 df <- df %>% 
@@ -49,10 +50,18 @@ df %>%
   ggplot() +
   aes(y=avg_time, x=year, color=surname) %>% 
   geom_line(size = 1) +
-  labs(title="porównanie srednich predkosci zawodnikow",
+  labs(title="porównanie srednich czasów zawodnikow",
         y = "œredni czas w sekundach",
         x = "rok") +
   xlim(2005, 2022)
+
+
+
+
+head(df)
+
+# porownanie srednich pozycji zawodników
+
 
 df %>% 
   ggplot() +
@@ -61,11 +70,20 @@ df %>%
   labs(title="porównanie srednich pozycji zawodnikow",
        y = "œrednie pozycje",
        x = "rok") +
-  xlim(2005, 2022)
+  xlim(2005, 2022) 
 
 
-head(df)
-
-# porownanie srednich pozycji zawodników
+head(earnings_2021) # te dane sa z https://www.statista.com/statistics/1255926/formula-one-salaries/
 
 
+earnings_2021 %>% 
+  ggplot() +
+  aes(x=earnings, y=reorder(name, earnings), fill=name) +
+  geom_bar(stat="identity") +
+  labs(title="porównanie zarobków najlepiej zarabiaj¹cych kierowców F1",
+       subtitle = "w 2021 roku",
+       y = "zawodnik",
+       x = "zarobki (w mln $)") +
+  scale_fill_manual(values = c("Lewis Hamilton" = Hamilton, 
+                               "Max Verstappen" = Verstappen,
+                               "Sebastian Vettel" = Vettel))
