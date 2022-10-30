@@ -79,10 +79,112 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
 
 
+circuits["rand_col"] = sample(1:4, length(circuits$name), replace=T)
+  
+
 ggplot(data = world) +
   geom_sf() +
   xlab("Longitude") + ylab("Latitude") +
   ggtitle("Mapa torow") + 
-  geom_point(data= circuits,aes(x=lng, y=lat), color = "darkblue")+
-  scale_x_continuous(limits = c(-10, 35)) +
-  scale_y_continuous(limits = c(35, 65))
+  geom_point(data= nowe_tory,aes(x=lng, y=lat, color = factor(rand_col)), size = 4)+
+  scale_x_continuous(limits = c(-10, 31)) +
+  scale_y_continuous(limits = c(35, 60)) + 
+  scale_color_manual(values = colors) +
+  theme_void() +
+  theme(legend.position = "none")
+
+
+unikalne_ID_torow_po_1990 = unique(te$circuitId)
+
+nowe_tory <- circuits %>%
+  filter(circuitId %in% unikalne_ID_torow_po_1990)
+
+nowe_wyscigi %>%
+  count(circuitId) %>%
+  arrange(desc(n))
+
+
+
+
+
+# tenisowy 
+
+najlepsi_id <- drivers %>%
+  filter(surname %in% c("Hamilton", "Schumacher", "Vettel", "Verstappen"))
+
+#------------WYKRES ZWYCI?STW W KARIERZE----------------
+
+# hamilton niebieski id=1
+# schumacher czerwony id=30
+# verstappen granatowy id=830
+# vettel zielony id=20
+
+# filtruje z results tylko tych kierowc?w co nas interesuj? i tylko pierwsze 
+# miejsca
+results %>%
+  filter(driverId %in% c(1, 30, 830, 20) & position == 1) %>%
+  select(driverId, raceId) -> df
+
+# merge z races po raceid zeby miec rok
+races %>%
+  select(raceId, year) %>%
+  merge(df) -> df
+
+# grupuje sezonami i kierowcami, zliczam
+df %>%
+  group_by(year) %>%
+  count(driverId) -> df
+
+# dodanie danych prymitywnie ale szybko
+
+# schumacher
+df[nrow(df) + 1,] <- list(1991,30,0)
+df[nrow(df) + 1,] <- list(2007,30,0)
+df[nrow(df) + 1,] <- list(2008,30,0)
+df[nrow(df) + 1,] <- list(2009,30,0)
+df[nrow(df) + 1,] <- list(2010,30,0)
+df[nrow(df) + 1,] <- list(2011,30,0)
+df[nrow(df) + 1,] <- list(2012,30,0)
+
+# vettel
+df[nrow(df) + 1,] <- list(2007,20,0)
+df[nrow(df) + 1,] <- list(2014,20,0)
+df[nrow(df) + 1,] <- list(2016,20,0)
+df[nrow(df) + 1,] <- list(2020,20,0)
+df[nrow(df) + 1,] <- list(2021,20,0)
+df[nrow(df) + 1,] <- list(2022,20,0)
+
+# verstappen
+df[nrow(df) + 1,] <- list(2015,830,0)
+
+#hamilton
+df[nrow(df) + 1,] <- list(2022,1,0)
+
+
+df %>%
+  arrange(year) %>%
+  group_by(driverId) %>%
+  mutate(cumsum(n)) -> df
+
+#popraweczka
+df$driverId <- as.character(df$driverId)
+
+# hamilton niebieski id=1
+# schumacher czerwony id=30
+# verstappen granatowy id=830
+# vettel zielony id=20
+rok_urodzenia <- c("30" = 1969,"1" = 1985, "830" = 1997, "20" = 1987)
+df["rok_urodzenia"] = rok_urodzenia[df$driverId]
+df["wiek"] = df["year"] - df["rok_urodzenia"]
+colors <- c("1" = "#00c2cb", "20" = "#004b20", "830" = "#004aad", "30" = "#e20404")
+#goodgame plot
+df %>%
+  ggplot(aes(x = wiek, y = `cumsum(n)`, colour = driverId)) + 
+  geom_line(size = 2) + 
+  geom_point(size = 4) +
+  scale_color_manual(values = colors) +
+  labs(title = "Ilość zwycięstw a wiek kierowcy", 
+       x = "Wiek",
+       y = "Ilość zwycięstw od początku kariery") +
+  theme(legend.position = "none")
+
