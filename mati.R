@@ -80,8 +80,11 @@ class(world)
 
 
 circuits["rand_col"] = sample(1:4, length(circuits$name), replace=T)
-  
+# tak powinny wygladac kolory 
+# colors <- c("1" = "#00c2cb", "20" = "#004b20", "830" = "#004aad", "30" = "#e20404")
 
+# ale z racji ze jest ta randomowa implementacja do torow to wygladaja tak
+colors <- c("1" = "#00c2cb", "2" = "#004b20", "3" = "#004aad", "4" = "#e20404")
 ggplot(data = world) +
   geom_sf() +
   xlab("Longitude") + ylab("Latitude") +
