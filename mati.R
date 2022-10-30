@@ -80,10 +80,10 @@ class(world)
 
 
 circuits["rand_col"] = sample(1:4, length(circuits$name), replace=T)
-# tak powinny wygladac kolory 
+# tak powinny wygladac kolory (po id kierowcow)
 # colors <- c("1" = "#00c2cb", "20" = "#004b20", "830" = "#004aad", "30" = "#e20404")
 
-# ale z racji ze jest ta randomowa implementacja do torow to wygladaja tak
+# ale z racji ze jest ta randomowa implementacja do mapki to wygladaja tak
 colors <- c("1" = "#00c2cb", "2" = "#004b20", "3" = "#004aad", "4" = "#e20404")
 ggplot(data = world) +
   geom_sf() +
@@ -92,7 +92,7 @@ ggplot(data = world) +
   geom_point(data= nowe_tory,aes(x=lng, y=lat, color = factor(rand_col)), size = 4)+
   scale_x_continuous(limits = c(-10, 31)) +
   scale_y_continuous(limits = c(35, 60)) + 
-  scale_color_manual(values = colors) +
+  scale_color_manual(values = colors) +  # tu ogarniam kolory
   theme_void() +
   theme(legend.position = "none")
 
