@@ -8,6 +8,7 @@ source("mega_wazny_plik.R")
 library(dplyr)
 library(ggplot2)
 library(scales)
+library(tidyquant)
 
 
 # pobieranie zbioróW
@@ -51,7 +52,10 @@ results$milliseconds <- as.numeric(results$milliseconds)
 
 df <- results %>%  merge(drivers) %>% 
   filter(driver.name %in% our_drivers) %>% 
-  merge(races, by.x = "raceId", by.y="raceId") 
+  merge(races, by.x = "raceId", by.y="raceId") %>% 
+  mutate(date = lubridate::floor_date(as.Date(date), "month"))
+
+str(df$date)
 
 df <- df %>% 
   group_by(driver.name, year) %>% 
@@ -59,14 +63,14 @@ df <- df %>%
 
 df %>% 
   ggplot() +
-  aes(y=avg_time, x=year, color=driver.name) %>% 
-  geom_line(size = 1) +
+  aes(y=avg_time, x=date, color=driver.name) %>% 
+  geom_smooth(size = 1) +
   labs(title="porównanie srednich czasów zawodnikow",
         y = "œredni czas w sekundach",
         x = "rok") +
   theme_minimal() +
   scale_color_manual(values = driver_colors) +
-  xlim(2005, 2022) +
+  # xlim(2005, 2022) +
   scale_y_reverse()
 
 
@@ -80,8 +84,8 @@ brk <- function(x) seq(ceiling(x[1]), floor(x[2]), by = 1)
 
 df %>% 
   ggplot() +
-  aes(y=avg_position, x=year, color=driver.name) %>% 
-  geom_line(size = 1) +
+  aes(y=avg_position, x=year, color=driver.name, group = driver.name) %>% 
+  geom_ma(size = 1, se=FALSE) +
   labs(title="Porównanie œrednich pozycji zawodnikow",
        subtitle="w zawodach Grand Prix na przestrzeni lat",
        y = "Œrednia pozycja",
@@ -89,8 +93,8 @@ df %>%
        color = "Kierowca") +
   theme_minimal() +
   scale_color_manual(values = driver_colors) +
-  xlim(2005, 2022) +
-  scale_y_reverse(breaks = c(10, 7, 4, 1))
+  #xlim(2005, 2022) +
+  scale_y_reverse(breaks = c(10, 7, 4, 1)) 
 
 
 # ZAROBKI
