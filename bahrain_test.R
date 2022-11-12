@@ -5,16 +5,16 @@ library(grid)
 
 proteza <- data.frame(
   pion = c('a', 'b', 'c', 'd', 'e'),
-  poziom = c(0, 0, 0, 0, 1),
+  poziom = c(1, 0, 0, 0, 1),
   info = c('14', '', '', '', '50%'),
-  color = c('ffffff','ffffff','ffffff','ffffff', '00c2cb')
+  color = c('#6f9dfe', '#ffffff','#ffffff','#ffffff','#6ffe76')
 )
 
 proteza
 img <- readPNG('bahrain.png')
 g <- rasterGrob(img, interpolate=TRUE)
 
-bahrain <- ggplot(proteza, aes(y = pion, x = poziom, fill = '3e79e7')) +
+bahrain <- ggplot(proteza, aes(y = pion, x = poziom, fill = color)) +
   geom_col() +
   geom_text(aes(label = info),
             hjust = 1, size = 10,
