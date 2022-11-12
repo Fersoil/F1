@@ -189,5 +189,10 @@ df %>%
   labs(title = "Ilość zwycięstw a wiek kierowcy", 
        x = "Wiek",
        y = "Ilość zwycięstw od początku kariery") +
-  theme(legend.position = "none")
+  theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
+              plot.background = element_rect(fill='transparent', color=NA),     
+              panel.grid.minor = element_blank(),
+              panel.grid.major = element_line(color = "#aaaaaa",
+                                                size = 0.25,
+                                                linetype = 1))
 

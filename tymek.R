@@ -9,6 +9,7 @@ library(dplyr)
 library(ggplot2)
 library(scales)
 library(tidyquant)
+library(ggthemes)
 
 
 # pobieranie zbioróW
@@ -53,18 +54,19 @@ results$milliseconds <- as.numeric(results$milliseconds)
 df <- results %>%  merge(drivers) %>% 
   filter(driver.name %in% our_drivers) %>% 
   merge(races, by.x = "raceId", by.y="raceId") %>% 
-  mutate(date = lubridate::floor_date(as.Date(date), "month"))
+  mutate(date = as.Date(date))
+  #mutate(date = lubridate::floor_date(as.Date(date), "month"))
 
 str(df$date)
 
 df <- df %>% 
-  group_by(driver.name, year) %>% 
+  group_by(driver.name, date) %>% 
   summarize(avg_time = mean(milliseconds/(1000)), avg_position=mean(position))
 
 df %>% 
   ggplot() +
   aes(y=avg_time, x=date, color=driver.name) %>% 
-  geom_smooth(size = 1) +
+  geom_ma(size = 1, se=FALSE, linetype=1, n=50) +
   labs(title="porównanie srednich czasów zawodnikow",
         y = "œredni czas w sekundach",
         x = "rok") +
@@ -84,18 +86,26 @@ brk <- function(x) seq(ceiling(x[1]), floor(x[2]), by = 1)
 
 df %>% 
   ggplot() +
-  aes(y=avg_position, x=year, color=driver.name, group = driver.name) %>% 
-  geom_ma(size = 1, se=FALSE) +
-  labs(title="Porównanie œrednich pozycji zawodnikow",
+  aes(y=avg_position, x=date, color=driver.name) +
+  geom_ma(size = 1, n=50, linetype = 1) +
+  labs(title="Œrednie pozycje",
        subtitle="w zawodach Grand Prix na przestrzeni lat",
        y = "Œrednia pozycja",
        x = "Rok",
        color = "Kierowca") +
-  theme_minimal() +
   scale_color_manual(values = driver_colors) +
-  #xlim(2005, 2022) +
-  scale_y_reverse(breaks = c(10, 7, 4, 1)) 
+  theme_few() +
+  #xlim(as.Date("2000-01-01"), as.Date("2022-12-31")) +
+  scale_y_reverse(breaks = c(10, 8, 6, 4, 2)) +
+  theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
+        plot.background = element_rect(fill='transparent', color=NA),
+        panel.grid.major = element_line(color = "#aaaaaa",
+                                        size=0.25,
+                                        linetype = 1)) -> srednia_poz
 
+
+srednia_poz
+ggsave('ostateczne/srednia_poz_przezro.png', srednia_poz, bg='transparent')
 
 # ZAROBKI
 
@@ -110,13 +120,21 @@ total_earnings %>%
   aes(x=earnings, y=reorder(name, earnings), fill=name) +
   geom_bar(stat="identity") +
   theme_minimal() +
-  labs(title="Porównanie maj¹tków najlepiej zarabiaj¹cych kierowców F1",
+  labs(title="Maj¹tki najlepiej zarabiaj¹cych kierowców F1",
        subtitle = "na rok 2022",
-       y = "zawodnik",
-       x = "maj¹tki (w mln $)") +
+       y="",
+       x = "Maj¹tki (w mln $)") +
   scale_fill_manual(values = driver_colors) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
+        plot.background = element_rect(fill='transparent', color=NA),     
+        panel.grid.major.y = element_blank(),     panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_line(color = "#aaaaaa",
+                                  size = 0.25,
+                                  linetype = 1)) -> piniondz
 
+
+piniondz
+ggsave('ostateczne/piniondz_przezro.png', piniondz, bg='transparent')
 
 
 # wyprzedzanie
