@@ -183,16 +183,25 @@ colors <- c("1" = "#00c2cb", "20" = "#004b20", "830" = "#004aad", "30" = "#e2040
 #goodgame plot
 df %>%
   ggplot(aes(x = wiek, y = `cumsum(n)`, colour = driverId)) + 
-  geom_line(size = 2) + 
-  geom_point(size = 4) +
+  geom_line(size = 1.5) + 
+  geom_point(size = 3) +
   scale_color_manual(values = colors) +
-  labs(title = "Ilość zwycięstw a wiek kierowcy", 
+  theme_minimal() +
+  labs(title = "Łączna liczba zwyciestw w zależności od wieku", 
        x = "Wiek",
        y = "Ilość zwycięstw od początku kariery") +
   theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
               plot.background = element_rect(fill='transparent', color=NA),     
               panel.grid.minor = element_blank(),
-              panel.grid.major = element_line(color = "#aaaaaa",
+              panel.grid.major = element_line(color = "#dddddd",
                                                 size = 0.25,
-                                                linetype = 1))
+                                                linetype = 1)) +
+  theme(text = element_text(colour = "white"), 
+        axis.line = element_line(color = "#dddddd"),
+        axis.text = element_text(colour = "white"),
+        panel.border = element_rect(color = "white", fill=NA))-> zwyciestwa
+
+
+zwyciestwa
+ggsave('ostateczne/zwyciestwa_czarne.png', zwyciestwa, bg='transparent')
 

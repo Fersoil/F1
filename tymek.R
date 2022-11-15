@@ -99,13 +99,17 @@ df %>%
   scale_y_reverse(breaks = c(10, 8, 6, 4, 2)) +
   theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
         plot.background = element_rect(fill='transparent', color=NA),
-        panel.grid.major = element_line(color = "#aaaaaa",
+        panel.grid.major = element_line(color = "#dddddd",
                                         size=0.25,
-                                        linetype = 1)) -> srednia_poz
+                                        linetype = 1)) +
+  theme(text = element_text(colour = "white"), 
+        axis.line = element_line(color = "#dddddd"),
+        axis.text = element_text(colour = "white"),
+        panel.border = element_rect(color = "white", fill=NA)) -> srednia_poz
 
 
 srednia_poz
-ggsave('ostateczne/srednia_poz_przezro.png', srednia_poz, bg='transparent')
+ggsave('ostateczne/srednia_poz_czarne.png', srednia_poz, bg='transparent')
 
 # ZAROBKI
 
@@ -128,13 +132,17 @@ total_earnings %>%
   theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
         plot.background = element_rect(fill='transparent', color=NA),     
         panel.grid.major.y = element_blank(),     panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_line(color = "#aaaaaa",
+        panel.grid.major.x = element_line(color = "#dddddd",
                                   size = 0.25,
-                                  linetype = 1)) -> piniondz
+                                  linetype = 1))+
+  theme(text = element_text(colour = "white"), 
+        axis.line = element_line(color = "#dddddd"),
+        axis.text = element_text(colour = "white"),
+        panel.border = element_rect(color = "white", fill=NA)) -> piniondz
 
 
 piniondz
-ggsave('ostateczne/piniondz_przezro.png', piniondz, bg='transparent')
+ggsave('ostateczne/piniondz_czarne.png', piniondz, bg='transparent')
 
 
 # wyprzedzanie
