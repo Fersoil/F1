@@ -96,19 +96,18 @@ ggplot(data = world) +
   theme_void() +
   theme(legend.position = "none")
 
+nowe_wyscigi <- races %>%
+  filter(year>1990)
 
-unikalne_ID_torow_po_1990 = unique(te$circuitId)
-
-nowe_tory <- circuits %>%
-  filter(circuitId %in% unikalne_ID_torow_po_1990)
-
-nowe_wyscigi %>%
+najczestsze_tory <- nowe_wyscigi %>%
   count(circuitId) %>%
   arrange(desc(n))
 
+najczestsze_tory <- head(najczestsze_tory,18)
+najczestsze_tory
 
-
-
+wybrane_tory <- circuits %>%
+  filter(circuitId %in% najczestsze_tory$circuitId)
 
 # tenisowy 
 
