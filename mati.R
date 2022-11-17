@@ -17,6 +17,7 @@ library(dplyr)
 library(ggplot2)
 
 
+
 #  jakie wykresy chce zrobic
 
 # ilosc wygranych wyscigow unormowane do rozpoczecia kariery
@@ -171,6 +172,8 @@ df %>%
 #popraweczka
 df$driverId <- as.character(df$driverId)
 
+source("theme.R")
+
 # hamilton niebieski id=1
 # schumacher czerwony id=30
 # verstappen granatowy id=830
@@ -179,26 +182,27 @@ rok_urodzenia <- c("30" = 1969,"1" = 1985, "830" = 1997, "20" = 1987)
 df["rok_urodzenia"] = rok_urodzenia[df$driverId]
 df["wiek"] = df["year"] - df["rok_urodzenia"]
 colors <- c("1" = "#00c2cb", "20" = "#004b20", "830" = "#004aad", "30" = "#e20404")
+
+drivers <- drivers %>% 
+  filter(driverId %in% driver_standings$driverId) %>% 
+  mutate(driver.name = paste(forename, surname, sep = " ")) %>% 
+  select(driverId, code, number, driver.name, dob, nationality, url) %>% 
+  rename(driver.number = number)
+
 #goodgame plot
 df %>%
-  ggplot(aes(x = wiek, y = `cumsum(n)`, colour = driverId)) + 
+  merge(drivers) %>% 
+  ggplot(aes(x = wiek, y = `cumsum(n)`, colour = driver.name)) + 
   geom_line(size = 1.5) + 
   geom_point(size = 3) +
-  scale_color_manual(values = colors) +
+  scale_color_manual(values = driver_colors) +
   theme_minimal() +
   labs(title = "Łączna liczba zwyciestw w zależności od wieku", 
        x = "Wiek",
-       y = "Ilość zwycięstw od początku kariery") +
-  theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
-              plot.background = element_rect(fill='transparent', color=NA),     
-              panel.grid.minor = element_blank(),
-              panel.grid.major = element_line(color = "#dddddd",
-                                                size = 0.25,
-                                                linetype = 1)) +
-  theme(text = element_text(colour = "white"), 
-        axis.line = element_line(color = "#dddddd"),
-        axis.text = element_text(colour = "white"),
-        panel.border = element_rect(color = "white", fill=NA))-> zwyciestwa
+       y = "Ilość zwycięstw od początku kariery", 
+       caption = "- koniec kariery")+
+  theme_form() +
+  theme(plot.caption = element_text(size=20, hjust = 1))-> zwyciestwa
 
 
 zwyciestwa

@@ -4,6 +4,7 @@
 
 getwd()
 source("mega_wazny_plik.R")
+source("theme.R")
 
 library(dplyr)
 library(ggplot2)
@@ -77,35 +78,23 @@ df %>%
 
 
 
-
 head(df)
 
 # porownanie srednich pozycji zawodników
 
-brk <- function(x) seq(ceiling(x[1]), floor(x[2]), by = 1)
-
-df %>% 
+source("theme.R")
+df %>% filter(date >= c(as.Date("01/01/98", "%d/%m/%y"))) %>%  #, as.Date("01/01/25", "%d/%m/%y"))) %>% 
   ggplot() +
   aes(y=avg_position, x=date, color=driver.name) +
-  geom_ma(size = 1, n=50, linetype = 1) +
+  geom_ma(size = 1.5, n=12, linetype = 1) +
   labs(title="Œrednie pozycje",
        subtitle="w zawodach Grand Prix na przestrzeni lat",
        y = "Œrednia pozycja",
        x = "Rok",
        color = "Kierowca") +
   scale_color_manual(values = driver_colors) +
-  theme_few() +
-  #xlim(as.Date("2000-01-01"), as.Date("2022-12-31")) +
   scale_y_reverse(breaks = c(10, 8, 6, 4, 2)) +
-  theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
-        plot.background = element_rect(fill='transparent', color=NA),
-        panel.grid.major = element_line(color = "#dddddd",
-                                        size=0.25,
-                                        linetype = 1)) +
-  theme(text = element_text(colour = "white"), 
-        axis.line = element_line(color = "#dddddd"),
-        axis.text = element_text(colour = "white"),
-        panel.border = element_rect(color = "white", fill=NA)) -> srednia_poz
+  theme_form() -> srednia_poz
 
 
 srednia_poz
@@ -120,29 +109,24 @@ head(total_earnings) # te dane s¹ z https://www.scmp.com/magazines/style/celebri
 
 total_earnings %>% 
   merge(drivers, by.x="name", by.y="driver.name") %>% 
+  mutate(name = reorder(name, earnings)) -> df_prep
+df_prep %>% 
   ggplot() +
-  aes(x=earnings, y=reorder(name, earnings), fill=name) +
-  geom_bar(stat="identity") +
-  theme_minimal() +
+  aes(x=earnings, y=name, fill=name) +
+  geom_bar(stat="identity", width = ifelse(df_prep$name %in% our_drivers, 0.9,0.9)) +
+  # zarzucona zmiana szerokoœci s³upków - wygl¹da to dziwnie
   labs(title="Maj¹tki najlepiej zarabiaj¹cych kierowców F1",
        subtitle = "na rok 2022",
        y="",
        x = "Maj¹tki (w mln $)") +
-  scale_fill_manual(values = driver_colors) +
-  theme(legend.position = "none", panel.background = element_rect(fill='transparent'),
-        plot.background = element_rect(fill='transparent', color=NA),     
-        panel.grid.major.y = element_blank(),     panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_line(color = "#dddddd",
-                                  size = 0.25,
-                                  linetype = 1))+
-  theme(text = element_text(colour = "white"), 
-        axis.line = element_line(color = "#dddddd"),
-        axis.text = element_text(colour = "white"),
-        panel.border = element_rect(color = "white", fill=NA)) -> piniondz
+  scale_fill_manual(values = driver_colors, na.value = "#333333") +
+  theme_form() +
+  theme(panel.grid.major.y = element_blank())  -> piniondz
 
 
 piniondz
 ggsave('ostateczne/piniondz_czarne.png', piniondz, bg='transparent')
+
 
 
 # wyprzedzanie
