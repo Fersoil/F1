@@ -75,9 +75,11 @@ df %>%
   theme_form() +
   scale_color_manual(values = driver_colors) +
   # xlim(2005, 2022) +
-  scale_y_reverse()
+  scale_y_reverse()+
+  theme(plot.caption = element_text(size=20, hjust = 1)) -> test
 
 
+ggsave('ostateczne/test.png', test, bg='transparent')
 
 head(df)
 
@@ -87,7 +89,7 @@ source("theme.R")
 df %>% filter(date >= c(as.Date("01/01/98", "%d/%m/%y"))) %>%  #, as.Date("01/01/25", "%d/%m/%y"))) %>% 
   ggplot() +
   aes(y = avg_position, x = date, color = driver.name) +
-  geom_ma(n=12, linetype = 1, size=1.5) +
+  geom_ma(n=12, linetype = 1, size=100) +
   labs(title = "Average positions",
        subtitle = "at Grand Prix competitions over the years",
        y = "Average position",
@@ -97,6 +99,8 @@ df %>% filter(date >= c(as.Date("01/01/98", "%d/%m/%y"))) %>%  #, as.Date("01/01
   scale_y_reverse(breaks = c(10, 8, 6, 4, 2)) +
   theme_form() -> srednia_poz
 
+lista <- srednia_poz$layers
+lista
 
 srednia_poz
 ggsave('ostateczne/srednia_final.png', srednia_poz, bg='transparent')
