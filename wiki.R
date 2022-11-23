@@ -21,10 +21,10 @@ najlepsi_id <- drivers %>%
 
 #------------WYKRES ZWYCIÊSTW W KARIERZE----------------
 
-# hamilton niebieski id=1
-# schumacher czerwony id=30
-# verstappen granatowy id=830
-# vettel zielony id=20
+# hamiltonId =1
+# schumacher Id=30
+# verstappen Id=830
+# vettel Id=20
 head(df)
 
 # filtruje z results tylko tych kierowców co nas interesuj¹ i tylko pierwsze 
@@ -115,4 +115,92 @@ df %>%
 df %>% 
   ggplot(aes(x = len, y = name, fill = name)) +
   geom_boxplot()
+# ===========================================TORY
+head(circuits)
 
+circuits %>%
+  filter(name == "Circuit of the Americas") %>%
+  select(circuitId)
+cota <- 69
+
+circuits %>%
+  filter(circuitRef == "imola") %>%
+  select(circuitId)
+imola <- 21
+
+circuits %>%
+  filter(name == "Autódromo José Carlos Pace") %>%
+  select(circuitId)
+interlagos <- 18
+
+circuits %>%
+  filter(name == "Circuit Gilles Villeneuve") %>%
+  select(circuitId)
+montreal <- 7
+
+circuits %>%
+  filter(name == "Autodromo Nazionale di Monza") %>%
+  select(circuitId)
+monza <- 14
+
+circuits %>%
+  filter(name == "Red Bull Ring") %>%
+  select(circuitId)
+redBullRing <- 70
+
+circuits %>%
+  filter(name == "Silverstone Circuit") %>%
+  select(circuitId)
+silverstone <- 9
+
+circuits %>%
+  filter(name == "Circuit de Spa-Francorchamps") %>%
+  select(circuitId)
+spa <- 13
+
+circuits %>%
+  filter(circuitRef == "suzuka") %>%
+  select(circuitId)
+suzuka <- 22
+
+circuits %>%
+  filter(circuitRef == "zandvoort") %>%
+  select(circuitId)
+zandvoort <- 39
+
+myCircuits <- c(cota, imola, interlagos, montreal, monza, redBullRing, silverstone,
+                suzuka, spa, zandvoort)
+
+hamiltonId = 1
+schumacherId = 30
+verstappenId = 830
+vettelId = 20
+
+myDrivers <- c(hamiltonId, schumacherId, verstappenId, vettelId)
+
+head(races)
+head(results)
+
+myData <- full_join(races, results, by = "raceId") %>%
+  select(raceId, circuitId, driverId, position) %>%
+  filter(driverId %in% myDrivers) %>%
+  filter(circuitId %in% myCircuits)
+
+head(myData)
+
+won <- myData %>%
+  filter(position == 1) %>%
+  group_by(circuitId) %>%
+  count(driverId) %>%
+  rename(won = n)
+
+total <- myData %>%
+  group_by(circuitId) %>%
+  count(driverId) %>%
+  rename(total = n)
+
+answ <- full_join(won, total, by = c('circuitId' = 'circuitId', 
+                                     'driverId' = 'driverId')) %>%
+  mutate(ratio = won / total)
+
+answ
