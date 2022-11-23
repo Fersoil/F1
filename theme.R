@@ -39,22 +39,22 @@ theme_form <- function(){
       # text elements
       text = element_text(colour = colour, family = font,
                           margin = margin(t = 2, r = 2, b = 2, l = 2, unit = "pt")),
-      axis.text = element_text(colour = colour, family = font),
+      axis.text = element_text(colour = colour, family = font, size=22),
       
       #text elements
       plot.title = element_text(
         hjust=0,
-        size = 30),               #raise slightly
+        size = 35),               #raise slightly
       
       plot.subtitle = element_text( 
         hjust=0,
-        size = 25),               #font size
+        size = 30),               #font size
       
       plot.caption = element_text(#font family
-        size = 9),               #right align
+        size = 14),               #right align
       
       axis.title = element_text(            #font family
-        size = 12),               #font size
+        size = 25),               #font size
       
       #axis.text = element_text(              #axis text
       #  family = font,            #axis famuly

@@ -197,14 +197,14 @@ df %>%
   geom_point(size = 3) +
   scale_color_manual(values = driver_colors) +
   theme_minimal() +
-  labs(title = "Łączna liczba zwyciestw w zależności od wieku", 
-       x = "Wiek",
-       y = "Ilość zwycięstw od początku kariery", 
-       caption = "- koniec kariery")+
+  labs(title = "Total numer of wins by age since career start", 
+       x = "Age",
+       y = "Number of wins by age", 
+       caption = "- end of career")+
   theme_form() +
   theme(plot.caption = element_text(size=20, hjust = 1))-> zwyciestwa
 
 
 zwyciestwa
-ggsave('ostateczne/zwyciestwa_czarne.png', zwyciestwa, bg='transparent')
+ggsave('ostateczne/zwyciestwa.png', zwyciestwa, bg='transparent')
 

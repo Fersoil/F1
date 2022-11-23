@@ -11,6 +11,7 @@ library(ggplot2)
 library(scales)
 library(tidyquant)
 library(ggthemes)
+library(tidyr)
 
 
 # pobieranie zbioróW
@@ -67,11 +68,11 @@ df <- df %>%
 df %>% 
   ggplot() +
   aes(y=avg_time, x=date, color=driver.name) %>% 
-  geom_ma(size = 1, se=FALSE, linetype=1, n=50) +
-  labs(title="porównanie srednich czasów zawodnikow",
+  geom_ma(size = 1.5, se=FALSE, linetype=1, n=50) +
+  labs(title="Circuits domination",
         y = "œredni czas w sekundach",
-        x = "rok") +
-  theme_minimal() +
+        x = "rok", caption = "Races won / total driven races") +
+  theme_form() +
   scale_color_manual(values = driver_colors) +
   # xlim(2005, 2022) +
   scale_y_reverse()
@@ -85,20 +86,20 @@ head(df)
 source("theme.R")
 df %>% filter(date >= c(as.Date("01/01/98", "%d/%m/%y"))) %>%  #, as.Date("01/01/25", "%d/%m/%y"))) %>% 
   ggplot() +
-  aes(y=avg_position, x=date, color=driver.name) +
-  geom_ma(size = 1.5, n=12, linetype = 1) +
-  labs(title="Œrednie pozycje",
-       subtitle="w zawodach Grand Prix na przestrzeni lat",
-       y = "Œrednia pozycja",
-       x = "Rok",
-       color = "Kierowca") +
+  aes(y = avg_position, x = date, color = driver.name) +
+  geom_ma(n=12, linetype = 1, size=1.5) +
+  labs(title = "Average positions",
+       subtitle = "at Grand Prix competitions over the years",
+       y = "Average position",
+       x = "Year",
+       color = "Driver") +
   scale_color_manual(values = driver_colors) +
   scale_y_reverse(breaks = c(10, 8, 6, 4, 2)) +
   theme_form() -> srednia_poz
 
 
 srednia_poz
-ggsave('ostateczne/srednia_poz_czarne.png', srednia_poz, bg='transparent')
+ggsave('ostateczne/srednia_final.png', srednia_poz, bg='transparent')
 
 # ZAROBKI
 
@@ -115,17 +116,18 @@ df_prep %>%
   aes(x=earnings, y=name, fill=name) +
   geom_bar(stat="identity", width = ifelse(df_prep$name %in% our_drivers, 0.9,0.9)) +
   # zarzucona zmiana szerokoœci s³upków - wygl¹da to dziwnie
-  labs(title="Maj¹tki najlepiej zarabiaj¹cych kierowców F1",
-       subtitle = "na rok 2022",
+  labs(title="Net worths of 10 richest F1 drivers",
+       subtitle = "for year 2022",
        y="",
-       x = "Maj¹tki (w mln $)") +
+       x = "Net worths (in mln $)") +
   scale_fill_manual(values = driver_colors, na.value = "#333333") +
   theme_form() +
   theme(panel.grid.major.y = element_blank())  -> piniondz
 
 
 piniondz
-ggsave('ostateczne/piniondz_czarne.png', piniondz, bg='transparent')
+
+ggsave('ostateczne/piniondz.png', piniondz, bg='transparent')
 
 
 
