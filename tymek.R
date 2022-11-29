@@ -86,24 +86,26 @@ head(df)
 # porownanie srednich pozycji zawodników
 
 source("theme.R")
-df %>% filter(date >= c(as.Date("01/01/98", "%d/%m/%y"))) %>%  #, as.Date("01/01/25", "%d/%m/%y"))) %>% 
+df %>% filter(date >= c(as.Date("01/01/98", "%d/%m/%y"))) %>% 
+  #filter(driver.name != "Michael Schumacher") %>% 
   ggplot() +
   aes(y = avg_position, x = date, color = driver.name) +
-  geom_ma(n=12, linetype = 1, size=100) +
+  geom_ma(n=12, linetype = 1, size=1.5) +
   labs(title = "Average positions",
        subtitle = "at Grand Prix competitions over the years",
        y = "Average position",
        x = "Year",
        color = "Driver") +
+  # wartoœci maksymalne i minimalne
   scale_color_manual(values = driver_colors) +
-  scale_y_reverse(breaks = c(10, 8, 6, 4, 2)) +
+  scale_y_reverse(breaks = c(9, 7, 5, 3, 1)) +
+  coord_x_date(xlim = c(as.Date("01/01/98", "%d/%m/%y"), as.Date("31/07/22", "%d/%m/%y")),
+               ylim = c(9, 1)) + 
   theme_form() -> srednia_poz
 
-lista <- srednia_poz$layers
-lista
 
 srednia_poz
-ggsave('ostateczne/srednia_final.png', srednia_poz, bg='transparent')
+ggsave('ostateczne/srednia.png', srednia_poz, bg='transparent')
 
 # ZAROBKI
 
